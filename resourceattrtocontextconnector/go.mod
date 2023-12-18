@@ -1,6 +1,6 @@
-module github.com/martinjt/resourceattrtocontextconnector/resourceattrtocontextconnector
+module github.com/martinjt/attributetocontextconnector/attributetocontextconnector
 
-go 1.21.0
+go 1.21.5
 
 require (
 	go.opentelemetry.io/collector v0.91.0
