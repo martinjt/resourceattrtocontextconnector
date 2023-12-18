@@ -1,4 +1,4 @@
-module github.com/martinjt/resourceattrtocontextconnector
+module github.com/martinjt/resourceattrtocontextconnector/resourceattrtocontextconnector
 
 go 1.21.0
 
