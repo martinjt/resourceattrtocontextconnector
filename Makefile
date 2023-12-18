@@ -21,7 +21,7 @@ build-arm-and-push-dockerhub: build-arm
 
 .PHONY: generate-metadata
 generate-metadata:
-	cd metricsasattributesprocessor && go generate
+	cd resourceattrtocontextconnector && go generate
 
 .PHONY: run
 run:
@@ -33,4 +33,4 @@ debug:
 
 .PHONY: test-span
 test-span:
-	otel-cli span --endpoint localhost:4317 --service "test" --name "Test Span" --attrs "app.honeycomb_api_key=" --tp-print
+	otel-cli span --endpoint localhost:4317 --service "test" --name "Test Span" --attrs "app.honeycomb_api_key=$(HONEYCOMB_API_KEY)" --tp-print

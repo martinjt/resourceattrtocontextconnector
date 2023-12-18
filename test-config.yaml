@@ -6,6 +6,9 @@ receivers:
 
 processors:
   batch:
+  groupbyattrs:
+    keys:
+      - app.honeycomb_api_key
 
 exporters:
   otlp:
@@ -18,7 +21,7 @@ extensions:
     headers:
       - action: insert
         key: x-honeycomb-team
-        from_context: x-honeycomb-team
+        from_context: app.honeycomb_api_key
 
 
 connectors:
@@ -29,6 +32,7 @@ service:
   pipelines:
     traces/ingest:
       receivers: [otlp]
+      processors: [batch, groupbyattrs]
       exporters: [honeycomb_attribute_to_context]
 
     traces/routed:

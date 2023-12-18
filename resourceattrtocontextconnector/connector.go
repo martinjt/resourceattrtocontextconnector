@@ -1,4 +1,4 @@
-package attributetocontextconnector
+package resourceattrtocontextconnector
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/connector"
 	"go.opentelemetry.io/collector/consumer"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.uber.org/zap"
 )
@@ -34,16 +35,26 @@ func newTracesConnector(
 }
 
 func (c *tracesConnector) ConsumeTraces(ctx context.Context, traces ptrace.Traces) error {
-	honeycombApiKey, _ := traces.ResourceSpans().At(0).ScopeSpans().At(0).Spans().At(0).Attributes().Get("app.honeycomb_api_key")
+	for i := 0; i < traces.ResourceSpans().Len(); i++ {
+		tracesForThisResource := ptrace.NewTraces()
+		traces.ResourceSpans().At(i).CopyTo(tracesForThisResource.ResourceSpans().AppendEmpty())
 
-	metadata := client.NewMetadata(map[string][]string{
-		"x-honeycomb-team": {honeycombApiKey.AsString()},
-	})
-	clientInfo := client.Info{
-		Metadata: metadata,
+		resource := traces.ResourceSpans().At(i).Resource()
+		resourceAttributeMeta := make(map[string][]string)
+
+		for j := 0; j < resource.Attributes().Len(); j++ {
+			resource.Attributes().Range(func(key string, value pcommon.Value) bool {
+				resourceAttributeMeta[key] = []string{value.AsString()}
+				return true
+			})
+		}
+		clientInfo := client.Info{
+			Metadata: client.NewMetadata(resourceAttributeMeta),
+		}
+		newCtx := client.NewContext(ctx, clientInfo)
+		c.tracesConsumer.ConsumeTraces(newCtx, tracesForThisResource)
 	}
-	newCtx := client.NewContext(ctx, clientInfo)
-	c.tracesConsumer.ConsumeTraces(newCtx, traces)
+
 	return nil
 }
 

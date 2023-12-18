@@ -1,4 +1,4 @@
-package attributetocontextconnector
+package resourceattrtocontextconnector
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 // NewFactory creates a factory for the spanmetrics connector.
 func NewFactory() connector.Factory {
 	return connector.NewFactory(
-		"honeycomb_attribute_to_context",
+		"resourceattr_to_context",
 		createDefaultConfig,
 		connector.WithTracesToTraces(createTracesToTraces, component.StabilityLevelDevelopment),
 	)
