@@ -30,5 +30,7 @@ receivers:
 extensions:
   - gomod: go.opentelemetry.io/collector/extension/ballastextension v0.89.0
   - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/healthcheckextension v0.89.0
+  - gomod: github.com/open-telemetry/opentelemetry-collector-contrib/extension/headerssetterextension v0.89.0
+connectors:
   - gomod: github.com/martinjt/attributetocontextconnector latest
     path: attributetocontextconnector

@@ -10,8 +10,6 @@ processors:
 exporters:
   otlp:
     endpoint: "api.honeycomb.io:443"
-    headers:
-      "x-honeycomb-dataset": "YOUR_DATASET"
     auth:
       authenticator: headers_setter
 
@@ -23,9 +21,16 @@ extensions:
         from_context: x-honeycomb-team
 
 
+connectors:
+  honeycomb_attribute_to_context:
+
 service:
+  extensions: [ headers_setter ]
   pipelines:
-    traces:
+    traces/ingest:
       receivers: [otlp]
-      processors: [batch]
+      exporters: [honeycomb_attribute_to_context]
+
+    traces/routed:
+      receivers: [honeycomb_attribute_to_context]
       exporters: [otlp]

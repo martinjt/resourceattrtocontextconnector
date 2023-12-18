@@ -3,6 +3,7 @@ package attributetocontextconnector
 import (
 	"context"
 
+	"go.opentelemetry.io/collector/client"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/connector"
 	"go.opentelemetry.io/collector/consumer"
@@ -33,9 +34,15 @@ func newTracesConnector(
 }
 
 func (c *tracesConnector) ConsumeTraces(ctx context.Context, traces ptrace.Traces) error {
-	honeycombApiKey, _ := traces.ResourceSpans().At(0).Resource().Attributes().Get("app.honeycomb_api_key")
+	honeycombApiKey, _ := traces.ResourceSpans().At(0).ScopeSpans().At(0).Spans().At(0).Attributes().Get("app.honeycomb_api_key")
 
-	newCtx := context.WithValue(ctx, "x-honeycomb-team", honeycombApiKey)
+	metadata := client.NewMetadata(map[string][]string{
+		"x-honeycomb-team": {honeycombApiKey.AsString()},
+	})
+	clientInfo := client.Info{
+		Metadata: metadata,
+	}
+	newCtx := client.NewContext(ctx, clientInfo)
 	c.tracesConsumer.ConsumeTraces(newCtx, traces)
 	return nil
 }

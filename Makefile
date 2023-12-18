@@ -25,7 +25,7 @@ generate-metadata:
 
 .PHONY: run
 run:
-	./dist/otelcol-custom --config=config.yaml
+	./dist/otelcol-custom --config=test-config.yaml
 
 .PHONY: debug
 debug:
@@ -33,4 +33,4 @@ debug:
 
 .PHONY: test-span
 test-span:
-	otel-cli span --endpoint localhost:4317 --service "test" --name "Test Span" --attrs "host.name=$(shell hostname)" --tp-print
+	otel-cli span --endpoint localhost:4317 --service "test" --name "Test Span" --attrs "app.honeycomb_api_key=" --tp-print
