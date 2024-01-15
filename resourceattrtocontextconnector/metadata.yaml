@@ -1,4 +1,4 @@
-type: resourceattrtocontext
+type: resourceattr_to_context
 
 status:
   class: connector
