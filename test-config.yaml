@@ -11,6 +11,8 @@ processors:
       - app.honeycomb_api_key
 
 exporters:
+  debug:
+    verbosity: detailed
   otlp:
     endpoint: "api.honeycomb.io:443"
     auth:
@@ -25,7 +27,7 @@ extensions:
 
 
 connectors:
-  honeycomb_attribute_to_context:
+  resourceattr_to_context:
 
 service:
   extensions: [ headers_setter ]
@@ -33,8 +35,17 @@ service:
     traces/ingest:
       receivers: [otlp]
       processors: [batch, groupbyattrs]
-      exporters: [honeycomb_attribute_to_context]
+      exporters: [resourceattr_to_context]
 
     traces/routed:
-      receivers: [honeycomb_attribute_to_context]
-      exporters: [otlp]
+      receivers: [resourceattr_to_context]
+      exporters: [otlp, debug]
+
+    logs/ingest:
+      receivers: [otlp]
+      processors: [batch, groupbyattrs]
+      exporters: [resourceattr_to_context]
+
+    logs/routed:
+      receivers: [resourceattr_to_context]
+      exporters: [otlp, debug]

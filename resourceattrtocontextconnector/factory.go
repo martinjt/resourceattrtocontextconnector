@@ -14,6 +14,7 @@ func NewFactory() connector.Factory {
 		"resourceattr_to_context",
 		createDefaultConfig,
 		connector.WithTracesToTraces(createTracesToTraces, component.StabilityLevelDevelopment),
+		connector.WithLogsToLogs(createLogsToLogs, component.StabilityLevelDevelopment),
 	)
 }
 
@@ -28,4 +29,13 @@ func createTracesToTraces(
 	traces consumer.Traces,
 ) (connector.Traces, error) {
 	return newTracesConnector(set, cfg, traces)
+}
+
+func createLogsToLogs(
+	_ context.Context,
+	set connector.CreateSettings,
+	cfg component.Config,
+	logs consumer.Logs,
+) (connector.Logs, error) {
+	return newLogsConnector(set, cfg, logs)
 }
